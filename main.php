@@ -7,31 +7,32 @@ require_once 'PieceWorker.php';
 
 class Main {
     private EmployeeRoster $roster;
-    private $size;
+    private int $size;
 
     public function __construct() {
         $this->roster = new EmployeeRoster();
     }
 
     public function start() {
-        $this->clear();
-        $this->size = readline("Enter the size of the roster: ");
-        
-        if ($this->size < 1) {
-            echo "Invalid input. Please try again.\n";
-            readline("Press \"Enter\" key to Return...");
-            $this->start();
-        } else {
-            $this->entrance();
+        $this->clearScreen();
+        $this->displayRosterInfo();
+
+        while (true) {
+            $this->size = (int) readline("Enter the size of the roster (current: " . $this->roster->count() . "): ");
+            if ($this->size < 1) {
+                echo "Invalid input. Please enter a positive integer.\n";
+            } else {
+                break;
+            }
         }
+
+        $this->entrance();
     }
 
     public function entrance() {
-        $choice = 0;
-
         while (true) {
-            $this->clear();
-            $this->menu();
+            $this->clearScreen();
+            $this->displayMenu();
 
             $choice = readline("Enter your choice: ");
             switch ($choice) {
@@ -39,32 +40,32 @@ class Main {
                     $this->addEmployee();
                     break;
                 case 2:
-                    $this->deleteMenu();
+                    $this->deleteEmployee();
                     break;
                 case 3:
-                    $this->otherMenu();
+                    $this->otherOptions();
                     break;
                 case 0:
                     echo "Process terminated.\n";
                     exit;
                 default:
                     echo "Invalid input. Please try again.\n";
-                    readline("Press \"Enter\" key to Return..");
+                    readline("Press \"Enter\" to return to the menu...");
                     break;
             }
-            }
-         }
-    
-    public function menu() {
+        }
+    }
+
+    public function displayMenu() {
         echo "*** EMPLOYEE ROSTER MENU ***\n";
         echo "[1] Add Employee\n";
         echo "[2] Delete Employee\n";
-        echo "[3] Other Menu\n";
+        echo "[3] Other Options\n";
         echo "[0] Exit\n";
     }
 
     public function addEmployee() {
-        $this->clear();
+        $this->clearScreen();
         echo "Add Employee Details:\n";
         $name = readline("Enter name: ");
         $address = readline("Enter address: ");
@@ -76,19 +77,19 @@ class Main {
     
         switch ($type) {
             case 1:
-                $baseSalary = (float)readline("Enter base salary: "); 
-                $commissionRate = (float)readline("Enter commission rate: ");
-                $sales = (float)readline("Enter sales: ");
+                $baseSalary = (float) readline("Enter base salary: "); 
+                $commissionRate = (float) readline("Enter commission rate: ");
+                $sales = (float) readline("Enter sales: ");
                 $employee = new CommissionEmployee($name, $address, $age, $company, $baseSalary, $commissionRate, $sales);
                 break;
             case 2:
-                $hourlyRate = (float)readline("Enter hourly rate: ");
-                $hoursWorked = (float)readline("Enter hours worked: ");
+                $hourlyRate = (float) readline("Enter hourly rate: ");
+                $hoursWorked = (float) readline("Enter hours worked: ");
                 $employee = new HourlyEmployee($name, $address, $age, $company, $hourlyRate, $hoursWorked);
                 break;
             case 3:
-                $pieceRate = (float)readline("Enter piece rate: ");
-                $piecesProduced = (int)readline("Enter pieces produced: ");
+                $pieceRate = (float) readline("Enter # of item: ");
+                $piecesProduced = (int) readline("Enter wageperItem: ");
                 $employee = new PieceWorker($name, $address, $age, $company, $pieceRate, $piecesProduced);
                 break;
             default:
@@ -97,14 +98,13 @@ class Main {
         }
     
         $this->roster->addEmployee($employee);
-        echo "Employee added!\n";
-        readline("Press \"Enter\" key to Return...");
+        echo "Employee added successfully!\n";
+        readline("Press \"Enter\" to return to the menu...");
     }
     
-    
-    public function deleteMenu() {
-        $this->clear();
-        echo "*** LIST of Employees on the current Roster ***\n";
+    public function deleteEmployee() {
+        $this->clearScreen();
+        echo "*** List of Employees ***\n";
 
         if ($this->roster->count() === 0) {
             echo "No employees to remove.\n";
@@ -119,21 +119,21 @@ class Main {
                 echo "-----------------------------\n";
             }
 
-            $id = readline("Select Employee to Remove (use the assigned #): ");
+            $id = (int) readline("Select Employee to Remove (use the assigned #): ");
             
-            if (is_numeric($id) && $id > 0 && $id <= $this->roster->count()) {
+            if ($id > 0 && $id <= $this->roster->count()) {
                 $this->roster->removeEmployee($id - 1);
-                echo "Employee Removed.\n";
+                echo "Employee removed successfully.\n";
             } else {
                 echo "Invalid selection.\n";
             }
         }
 
-        readline("Press \"Enter\" key to Return...");
+        readline("Press \"Enter\" to return to the menu...");
     }
 
-    public function otherMenu() {
-        $this->clear();
+    public function otherOptions() {
+        $this->clearScreen();
         echo "[1] Display All Employees\n";
         echo "[2] Count Employees\n";
         echo "[3] Calculate Payroll\n";
@@ -146,7 +146,7 @@ class Main {
                 $this->displayAllEmployees();
                 break;
             case 2:
-                echo "Total number of employees: " . $this->roster->count() . "\n";
+                $this->countEmployees();
                 break;
             case 3:
                 echo "Total payroll: $" . $this->roster->calculateTotalPayroll() . "\n";
@@ -158,12 +158,12 @@ class Main {
                 break;
         }
 
-        readline("Press \"Enter\" key to continue...");
+        readline("Press \"Enter\" to continue...");
     }
 
     public function displayAllEmployees() {
-        $this->clear();
-        echo "*** LIST of Employees on the current Roster ***\n";
+        $this->clearScreen();
+        echo "*** List of Employees ***\n";
 
         if ($this->roster->count() === 0) {
             echo "No employees in the roster.\n";
@@ -179,11 +179,60 @@ class Main {
             }
         }
 
-        readline("Press \"Enter\"to Return...");
+        readline("Press \"Enter\" to return to the menu...");
     }
 
-    private function clear() {
-        echo str_repeat("\n", 1); 
+    private function countEmployees() {
+        echo "Employee Count Options:\n";
+        echo "[1] Count All Employees\n";
+        echo "[2] Count Commission Employees\n";
+        echo "[3] Count Hourly Employees\n";
+        echo "[4] Count Piece Worker Employees\n";
+        
+        $choice = readline("Enter your choice: ");
+
+        $count = 0;
+        switch ($choice) {
+            case 1:
+                echo "Total Employees: " . $this->roster->count() . "\n";
+                break;
+            case 2:
+                foreach ($this->roster->getEmployees() as $employee) {
+                    if ($employee instanceof CommissionEmployee) $count++;
+                }
+                echo "Commission Employees: $count\n";
+                break;
+            case 3:
+                foreach ($this->roster->getEmployees() as $employee) {
+                    if ($employee instanceof HourlyEmployee) $count++;
+                }
+                echo "Hourly Employees: $count\n";
+                break;
+            case 4:
+                foreach ($this->roster->getEmployees() as $employee) {
+                    if ($employee instanceof PieceWorker) $count++;
+                }
+                echo "Piece Worker Employees: $count\n";
+                break;
+            default:
+                echo "Invalid input.\n";
+                break;
+        }
+    }
+
+    private function clearScreen() {
+        echo str_repeat("\n", 1);
+    }
+
+    private function displayRosterInfo() {
+        echo "*** Current Employee Roster ***\n";
+        if ($this->roster->count() > 0) {
+            echo "Total Employees: " . $this->roster->count() . "\n";
+            $this->displayAllEmployees();
+        } else {
+            echo "No employees in the roster.\n";
+        }
+        echo "-------------------------------\n";
     }
 }
 
