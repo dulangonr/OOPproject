@@ -21,3 +21,4 @@ class CommissionEmployee extends Employee {
         return parent::__toString() . ", Type: CommissionEmployee, Regular Salary: $this->regularSalary, Items Sold: $this->itemSold, Commission Rate: $this->commissionRate";
     }
 }
+?>
