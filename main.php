@@ -18,14 +18,17 @@ class Main {
         $this->displayRosterInfo();
 
         while (true) {
-            $this->size = (int) readline("Enter the size of the roster (current: " . $this->roster->count() . "): ");
+            $this->size = (int) readline("Enter the size of the roster : ");
+            
+      
+            echo "Available size of Roster: " . $this->size . "\n";
             if ($this->size < 1) {
                 echo "Invalid input. Please enter a positive integer.\n";
             } else {
                 break;
             }
         }
-
+    
         $this->entrance();
     }
 
