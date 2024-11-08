@@ -1,20 +1,22 @@
 <?php
-
 require_once 'Person.php';
 
-class Employee extends Person {
-    protected $company;
+abstract class Employee extends Person {
+    private string $companyName;
 
-    public function __construct($name, $address, $age, $company) {
+    public function __construct(string $name, string $address, int $age, string $companyName) {
         parent::__construct($name, $address, $age);
-        $this->company = $company;
+        $this->companyName = $companyName;
     }
 
-    public function getCompany() {
-        return $this->company;
+    public function getCompany(): string {
+        return $this->companyName;
     }
 
-    public function getSalary() {
-        return 0;
+    abstract public function earnings(): float;
+
+    public function __toString(): string {
+        return parent::__toString() . ", Company: $this->companyName";
     }
 }
+
