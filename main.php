@@ -183,7 +183,7 @@ class Main {
     }
 
     private function clear() {
-        echo str_repeat("\n", 1); // Simple clear screen for terminal
+        echo str_repeat("\n", 1); 
     }
 }
 
